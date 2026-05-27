@@ -38,3 +38,8 @@ __pycache__/
 *.log
 debug_payload.json
 brainstorm_outputs/
+
+# Locally generated benchmark audit outputs
+benchmarks/local_model_benchmark.json
+benchmarks/local_model_quick_audit.json
+benchmarks/llama_server_settings_audit.md

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>little-coder · a coding agent tuned for small local models</title>
-<meta name="description" content="little-coder is an offline, pi-based coding agent tuned for small local models. On the official Terminal-Bench 2.0 leaderboard, Qwen3.6-35B-A3B + little-coder scored 24.6% ± 3.2 — above Gemini CLI on Gemini 2.5 Pro — running on an 8 GB laptop GPU with the wifi off." />
+<title>little-coder · a coding agent for local models</title>
+<meta name="description" content="little-coder is a pi-based coding agent tuned for local models. It keeps the tool surface small, discovers live local providers, and works well with llama.cpp, Ollama, and LM Studio." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap" />
@@ -34,10 +34,10 @@
 <!-- ============================== hero ============================== -->
 <section id="top" class="hero" data-screen-label="hero">
   <div class="hero-grid">
-    <span class="hero-tag reveal"><span class="dot"></span> v<span data-version>1.5.1</span></span>
+    <span class="hero-tag reveal"><span class="dot"></span> v<span data-version>1.8.1</span></span>
     <h1 class="hero-mark mono"><span class="ch" style="--d:0">l</span><span class="ch" style="--d:1">c</span><span class="cursor big"></span></h1>
     <p class="hero-lead reveal" style="--d:0.4s">
-      a coding agent built <span class="lead-rotate"><span class="lead-tail">for small models</span><span class="cursor lead-cursor blink"></span></span>
+      a coding agent built <span class="lead-rotate"><span class="lead-tail">for local models</span><span class="cursor lead-cursor blink"></span></span>
     </p>
     <div class="hero-cta reveal" style="--d:0.6s">
       <a class="btn primary" href="#install"><span class="prompt mono">&gt;</span> quick start</a>
@@ -49,18 +49,18 @@
 <!-- ============================== why / benchmark ============================== -->
 <section id="why" class="bench" data-screen-label="benchmark">
   <div class="section-head">
-    <div class="eyebrow">// an 8 GB laptop walked onto the official terminal-bench 2.0 leaderboard.</div>
-    <h2 class="section-title">and walked out ranked above<br/>gemini cli + gemini 2.5 pro.</h2>
-    <p class="section-lead">this is the laptop next to you, with the wifi off.</p>
+    <div class="eyebrow">// validated on the official terminal-bench 2.0 leaderboard.</div>
+    <h2 class="section-title">a compact local stack<br/>that still benchmarks seriously.</h2>
+    <p class="section-lead">small-model-first, network-optional, and designed to stay predictable on real hardware.</p>
   </div>
 
   <div class="bench-stage" data-anim="bench">
     <!-- challenger -->
     <div class="bench-row challenger">
       <div class="bench-meta">
-        <div class="role">// challenger</div>
+        <div class="role">// local challenger</div>
         <div class="who">qwen3.6-35b-a3b + little-coder</div>
-        <div class="specs">35B-A3B · 3B active · 8 GB laptop GPU · offline · no API</div>
+        <div class="specs">35B-A3B · 3B active · local GPU · offline capable · no cloud API</div>
       </div>
       <div class="bench-bar-wrap">
         <div class="bench-bar honey" style="--target: 24.6">
@@ -80,7 +80,7 @@
     <!-- champ -->
     <div class="bench-row champ">
       <div class="bench-meta">
-        <div class="role">// frontier cloud agent</div>
+        <div class="role">// reference cloud agent</div>
         <div class="who">Gemini 2.5 Pro + Gemini CLI</div>
         <div class="specs">frontier-scale · cloud-served · undisclosed params · API metered</div>
       </div>
@@ -123,7 +123,7 @@
           <div class="dim">resolving dependencies...</div>
           <div class="dim">fetching @earendil-works/pi-coding-agent</div>
           <div class="bar-line"><span class="bar-track"><span class="bar-fill"></span></span><span class="pct mono">100%</span></div>
-          <div class="ok"><span class="check">✓</span> installed little-coder <span data-version>1.5.1</span> · node 22.19+</div>
+          <div class="ok"><span class="check">✓</span> installed little-coder <span data-version>1.8.1</span> · node 22.19+</div>
         </div>
         <div class="t-line" data-step="2"><span class="p">$</span> <span class="cmd" data-type="llama-server -hf unsloth/Qwen3.6-35B-A3B-GGUF"></span><span class="caret hide"></span></div>
         <div class="t-out" data-step="3">
@@ -134,7 +134,7 @@
         <div class="t-line" data-step="4"><span class="p">$</span> <span class="cmd" data-type="little-coder --model llamacpp/qwen3.6-35b-a3b"></span><span class="caret hide"></span></div>
         <div class="t-out" data-step="5">
           <div class="lc-boot">
-            <div class="lc-boot-head"><span class="mono mark sm">lc</span> <span class="paper">little-coder</span> <span class="dim">v<span data-version>1.5.1</span> · offline</span></div>
+            <div class="lc-boot-head"><span class="mono mark sm">lc</span> <span class="paper">little-coder</span> <span class="dim">v<span data-version>1.8.1</span> · offline</span></div>
             <div class="tf-status"><span class="dim">Context:</span> 0.4K/32K (1%) <span class="dim">·</span> <span class="dim">model:</span> <span class="tf-model">llamacpp/qwen3.6-35b-a3b</span></div>
             <div class="dim">/help for commands · ctrl-c to quit</div>
             <div class="lc-prompt"><span class="p honey">&gt;</span> <span class="caret blink"></span></div>
@@ -147,22 +147,22 @@
       <div class="step">
         <div class="step-k mono">01</div>
         <div class="step-v">
-          <h4>install the agent.</h4>
-          <p>one command: <code>npm install -g little-coder</code> (or the curl one-liner, or <code>bun add -g</code>). needs node 22.19+.</p>
+          <h4>Install the agent.</h4>
+          <p>one command: <code>npm install -g little-coder</code> (or the curl one-liner, or <code>bun add -g</code>). node 22.19+ required.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-k mono">02</div>
         <div class="step-v">
-          <h4>bring a local model.</h4>
-          <p>serve one with llama.cpp — the tuned path, running the 35B-A3B MoE on 8 GB of vram via the <code>--n-cpu-moe</code> trick. ollama, lm studio, and cloud models work too; point the agent at it with <code>--model</code>.</p>
+          <h4>Bring a local model.</h4>
+          <p>serve one with llama.cpp — the tuned path, running the 35B-A3B MoE on modest hardware. Ollama, LM Studio, and cloud models work too; point the agent at it with <code>--model</code>.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-k mono">03</div>
         <div class="step-v">
-          <h4>start coding.</h4>
-          <p><code>little-coder</code> in your repo drops you into a repl. ask in plain english; it reads, edits, and runs against your working tree.</p>
+          <h4>Start coding.</h4>
+          <p><code>little-coder</code> in your repo drops you into a repl. ask in plain English; it reads, edits, and runs against your working tree.</p>
         </div>
       </div>
     </aside>
@@ -174,7 +174,7 @@
   <div class="section-head">
     <div class="eyebrow">// a sample session</div>
     <h2 class="section-title">how it feels.</h2>
-    <p class="section-lead">you write english. it reads, edits, and runs<br/>against your working tree — all done locally.</p>
+    <p class="section-lead">you write plain English. it reads, edits, and runs<br/>against your working tree — all while staying local.</p>
   </div>
 
   <div class="session-terminal" data-anim="session">
@@ -213,7 +213,7 @@
     <div class="comm-copy">
       <div class="eyebrow">// community</div>
       <h2 class="section-title">talk to us<br/>where the code lives.</h2>
-      <p class="section-lead">no discord, no slack, no forum subscription — just the github issues tab. file a bug, ask how to serve a model on your hardware, and you'll usually get a worked-through answer.</p>
+      <p class="section-lead">no discord, no slack, no forum subscription — just the GitHub issues tab. file a bug, ask how to serve a model on your hardware, and you'll usually get a worked-through answer.</p>
       <div class="comm-cta">
         <a class="btn primary" href="https://github.com/itayinbarr/little-coder/issues" target="_blank" rel="noopener">
           <span class="prompt mono">&gt;</span> browse issues
@@ -269,7 +269,7 @@
     <span class="mono mark big"><span class="ch">l</span><span class="ch">c</span><span class="cursor"></span></span>
     <div class="foot-msg">
       <div class="eyebrow">// small things, done thoughtfully.</div>
-      <div class="foot-tag">an offline coding agent.<br/>kept small on purpose.</div>
+      <div class="foot-tag">a local coding agent.<br/>kept small on purpose.</div>
     </div>
   </div>
   <div class="foot-bottom">

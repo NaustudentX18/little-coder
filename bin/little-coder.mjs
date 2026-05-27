@@ -16,6 +16,7 @@ import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkForUpdate } from "./update-check.mjs";
+import { autoUnloadLlamaCpp } from "./launcher-utils.mjs";
 
 // ---- 1. Node version preflight (>= 22.19.0, matching pi.dev) ----
 const MIN_NODE = [22, 19, 0];
@@ -142,6 +143,23 @@ const piArgs = [
 if (process.env.PI_SKIP_VERSION_CHECK === undefined) {
   process.env.PI_SKIP_VERSION_CHECK = "1";
 }
+
+// ---- 7b. Best-effort llama.cpp unload when switching to a non-llama model ---
+// If the selected model is from Ollama / cloud / anything other than llama.cpp,
+// we try to free the locally-running llama.cpp model first. This is best-effort:
+// - primary path: POST /models/unload (router-mode llama.cpp)
+// - fallback: optional LITTLE_CODER_LLAMACPP_STOP_CMD for a host-side shutdown
+//   command when the server is a fixed single-model process.
+const userArgsForUnload = process.argv.slice(2).filter((a) => a !== "--no-update-check");
+await autoUnloadLlamaCpp({
+  args: userArgsForUnload,
+  env: process.env,
+  logger: (msg) => {
+    if (process.env.LITTLE_CODER_LLAMACPP_AUTO_UNLOAD_VERBOSE === "1") {
+      console.error(msg);
+    }
+  },
+});
 
 // ---- 8. Force pi's global quietStartup + pin lastChangelogVersion ----
 // Two non-destructive merges into ~/.pi/agent/settings.json (or the dir pointed

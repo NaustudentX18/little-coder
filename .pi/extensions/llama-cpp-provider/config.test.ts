@@ -5,8 +5,11 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   applyEnvOverrides,
+  discoverOllamaModels,
+  isChatOllamaModel,
   loadProviders,
   mergeProviders,
+  normalizeOllamaModelId,
   resolveOverridePath,
   propsUrlFor,
   contextWindowFromProps,
@@ -107,17 +110,17 @@ describe("loadProviders (filesystem)", () => {
     rmSync(dir, { recursive: true, force: true });
   });
 
-  it("loads the package default when present", () => {
+  it("loads the package default when present", async () => {
     writeFileSync(
       join(dir, "models.json"),
       JSON.stringify({ providers: { llamacpp: sampleProvider("http://a/v1", "m1") } }),
     );
-    const result = loadProviders(dir, {});
+    const result = await loadProviders(dir, { LITTLE_CODER_DISCOVER_OLLAMA: "0" });
     expect(Object.keys(result.providers)).toEqual(["llamacpp"]);
     expect(result.sources[0]).toMatchObject({ status: "ok" });
   });
 
-  it("merges a user override file when LITTLE_CODER_MODELS_FILE points at one", () => {
+  it("merges a user override file when LITTLE_CODER_MODELS_FILE points at one", async () => {
     writeFileSync(
       join(dir, "models.json"),
       JSON.stringify({ providers: { llamacpp: sampleProvider("http://a/v1", "pkg") } }),
@@ -127,39 +130,39 @@ describe("loadProviders (filesystem)", () => {
       userPath,
       JSON.stringify({ providers: { llamacpp: sampleProvider("http://b/v1", "user") } }),
     );
-    const result = loadProviders(dir, { LITTLE_CODER_MODELS_FILE: userPath });
+    const result = await loadProviders(dir, { LITTLE_CODER_MODELS_FILE: userPath, LITTLE_CODER_DISCOVER_OLLAMA: "0" });
     expect(result.providers.llamacpp.baseUrl).toBe("http://b/v1");
     expect(result.providers.llamacpp.models[0].id).toBe("user");
   });
 
-  it("reports invalid JSON in the package default and returns empty providers", () => {
+  it("reports invalid JSON in the package default and returns empty providers", async () => {
     writeFileSync(join(dir, "models.json"), "{ this is not json");
-    const result = loadProviders(dir, {});
+    const result = await loadProviders(dir, { LITTLE_CODER_DISCOVER_OLLAMA: "0" });
     expect(result.providers).toEqual({});
     expect(result.sources[0].status).toBe("invalid");
   });
 
-  it("reports a missing user override without failing the load", () => {
+  it("reports a missing user override without failing the load", async () => {
     writeFileSync(
       join(dir, "models.json"),
       JSON.stringify({ providers: { llamacpp: sampleProvider("http://a/v1", "m1") } }),
     );
     const missing = join(dir, "no-such-dir", "models.json");
-    const result = loadProviders(dir, { LITTLE_CODER_MODELS_FILE: missing });
+    const result = await loadProviders(dir, { LITTLE_CODER_MODELS_FILE: missing, LITTLE_CODER_DISCOVER_OLLAMA: "0" });
     expect(result.providers.llamacpp.baseUrl).toBe("http://a/v1");
     expect(result.sources.find((s) => s.path === missing)?.status).toBe("missing");
   });
 
-  it("env var still overrides baseUrl after merge", () => {
+  it("env var still overrides baseUrl after merge", async () => {
     writeFileSync(
       join(dir, "models.json"),
       JSON.stringify({ providers: { llamacpp: sampleProvider("http://file/v1", "m") } }),
     );
-    const result = loadProviders(dir, { LLAMACPP_BASE_URL: "http://env/v1" });
+    const result = await loadProviders(dir, { LLAMACPP_BASE_URL: "http://env/v1", LITTLE_CODER_DISCOVER_OLLAMA: "0" });
     expect(result.providers.llamacpp.baseUrl).toBe("http://env/v1");
   });
 
-  it("XDG_CONFIG_HOME overrides applied when no LITTLE_CODER_MODELS_FILE set", () => {
+  it("XDG_CONFIG_HOME overrides applied when no LITTLE_CODER_MODELS_FILE set", async () => {
     writeFileSync(
       join(dir, "models.json"),
       JSON.stringify({ providers: { llamacpp: sampleProvider("http://a/v1", "pkg") } }),
@@ -170,7 +173,7 @@ describe("loadProviders (filesystem)", () => {
       join(xdg, "little-coder", "models.json"),
       JSON.stringify({ providers: { llamacpp: sampleProvider("http://x/v1", "via-xdg") } }),
     );
-    const result = loadProviders(dir, { XDG_CONFIG_HOME: xdg });
+    const result = await loadProviders(dir, { XDG_CONFIG_HOME: xdg, LITTLE_CODER_DISCOVER_OLLAMA: "0" });
     expect(result.providers.llamacpp.models[0].id).toBe("via-xdg");
   });
 });
@@ -179,8 +182,8 @@ describe("shipped models.json", () => {
   const here = dirname(fileURLToPath(import.meta.url));
   const pkgRoot = resolve(here, "..", "..", "..");
 
-  it("registers lmstudio/local-model on http://127.0.0.1:1234/v1", () => {
-    const result = loadProviders(pkgRoot, {});
+  it("registers lmstudio/local-model on http://127.0.0.1:1234/v1", async () => {
+    const result = await loadProviders(pkgRoot, { LITTLE_CODER_DISCOVER_OLLAMA: "0" });
     const lmstudio = result.providers.lmstudio;
     expect(lmstudio, "lmstudio provider should be present in shipped models.json").toBeDefined();
     expect(lmstudio.baseUrl).toBe("http://127.0.0.1:1234/v1");
@@ -189,9 +192,42 @@ describe("shipped models.json", () => {
     expect(lmstudio.models.find((m) => m.id === "local-model")).toBeDefined();
   });
 
-  it("still registers llamacpp and ollama alongside lmstudio", () => {
-    const result = loadProviders(pkgRoot, {});
+  it("still registers llamacpp and ollama alongside lmstudio", async () => {
+    const result = await loadProviders(pkgRoot, { LITTLE_CODER_DISCOVER_OLLAMA: "0" });
     expect(Object.keys(result.providers).sort()).toEqual(["llamacpp", "lmstudio", "ollama"]);
+  });
+});
+
+describe("live Ollama discovery helpers", () => {
+  it("normalizes :latest aliases and skips embeddings", () => {
+    expect(normalizeOllamaModelId("qwen3.6-agent:latest")).toBe("qwen3.6-agent");
+    expect(isChatOllamaModel("nomic-embed-text")).toBe(false);
+    expect(isChatOllamaModel("qwen3.6-agent")).toBe(true);
+  });
+
+  it("discovers live Ollama models from /api/tags", async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = (async (url: RequestInfo | URL) => {
+      expect(String(url)).toBe("http://pc:11434/api/tags");
+      return {
+        ok: true,
+        json: async () => ({
+          models: [
+            { name: "qwen3.6-agent:latest" },
+            { name: "nomic-embed-text:latest" },
+            { name: "mistral-agent:latest" },
+          ],
+        }),
+      } as Response;
+    }) as unknown as typeof fetch;
+
+    try {
+      const models = await discoverOllamaModels("http://pc:11434/v1", {});
+      expect(models.map((m) => m.id)).toEqual(["qwen3.6-agent", "mistral-agent"]);
+      expect(models[0].contextWindow).toBe(65536);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
   });
 });
 

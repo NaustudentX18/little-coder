@@ -17,7 +17,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const pkgRoot = resolve(here, "..", "..", "..");
 
 export default async function (pi: ExtensionAPI) {
-  const result = loadProviders(pkgRoot);
+  const result = await loadProviders(pkgRoot);
 
   for (const src of result.sources) {
     if (src.status === "invalid") {

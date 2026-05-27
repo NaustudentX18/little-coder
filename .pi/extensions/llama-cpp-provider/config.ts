@@ -93,6 +93,107 @@ export function applyEnvOverrides(providers: Record<string, ProviderEntry>, env:
   return out;
 }
 
+const OLLAMA_DISCOVERY_ENV = "LITTLE_CODER_DISCOVER_OLLAMA";
+const OLLAMA_DISCOVERY_TIMEOUT_ENV = "LITTLE_CODER_OLLAMA_DISCOVERY_TIMEOUT_MS";
+const DEFAULT_DISCOVERY_TIMEOUT_MS = 1500;
+const NON_CHAT_MODEL_PATTERNS = [/embed/i, /embedding/i, /^nomic-embed-text/i];
+
+export function normalizeOllamaModelId(modelId: string): string {
+  return modelId.trim().replace(/:latest$/i, "");
+}
+
+export function isChatOllamaModel(modelId: string): boolean {
+  return !NON_CHAT_MODEL_PATTERNS.some((pattern) => pattern.test(modelId));
+}
+
+function inferredContextWindow(modelId: string): number {
+  return /(^|[-:])(8b|e4b)($|[-:])/i.test(modelId) ? 32768 : 65536;
+}
+
+function dedupeModels(models: ProviderModelEntry[]): ProviderModelEntry[] {
+  const seen = new Set<string>();
+  const out: ProviderModelEntry[] = [];
+  for (const model of models) {
+    if (seen.has(model.id)) continue;
+    seen.add(model.id);
+    out.push(model);
+  }
+  return out;
+}
+
+function parseOllamaModelList(payload: unknown): string[] {
+  if (!payload || typeof payload !== "object") return [];
+  const obj = payload as {
+    models?: Array<{ name?: unknown; model?: unknown }>;
+    data?: Array<{ id?: unknown; name?: unknown }>;
+  };
+  const fromModels = Array.isArray(obj.models)
+    ? obj.models.map((m) => normalizeOllamaModelId(String(m?.model ?? m?.name ?? "")))
+    : [];
+  const fromData = Array.isArray(obj.data)
+    ? obj.data.map((m) => normalizeOllamaModelId(String(m?.id ?? m?.name ?? "")))
+    : [];
+  return [...fromModels, ...fromData].filter(Boolean);
+}
+
+async function fetchJson(url: string, timeoutMs: number): Promise<unknown> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { signal: ctrl.signal });
+    if (!res.ok) return undefined;
+    return await res.json();
+  } catch {
+    return undefined;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function ollamaModelsEndpoint(baseUrl: string): string {
+  return `${baseUrl.replace(/\/v1\/?$/, "").replace(/\/+$/, "")}/api/tags`;
+}
+
+export async function discoverOllamaModels(
+  baseUrl: string,
+  env: NodeJS.ProcessEnv = process.env,
+): Promise<ProviderModelEntry[]> {
+  if (env[OLLAMA_DISCOVERY_ENV] === "0") return [];
+
+  const timeoutMs = Number(env[OLLAMA_DISCOVERY_TIMEOUT_ENV]) || DEFAULT_DISCOVERY_TIMEOUT_MS;
+  const payload = await fetchJson(ollamaModelsEndpoint(baseUrl), timeoutMs);
+  const ids = parseOllamaModelList(payload).filter(isChatOllamaModel);
+
+  return dedupeModels(
+    ids.map((id) => ({
+      id,
+      name: id,
+      reasoning: true,
+      input: ["text"],
+      contextWindow: inferredContextWindow(id),
+      maxTokens: 4096,
+      cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+    })),
+  );
+}
+
+async function mergeLiveOllamaModels(
+  provider: ProviderEntry,
+  env: NodeJS.ProcessEnv,
+): Promise<ProviderEntry> {
+  if (provider.api !== "openai-completions") return provider;
+  const discovered = await discoverOllamaModels(provider.baseUrl, env);
+  if (discovered.length === 0) return provider;
+
+  const byId = new Map(provider.models.map((model) => [model.id, model]));
+  const merged = [...provider.models];
+  for (const model of discovered) {
+    if (byId.has(model.id)) continue;
+    merged.push(model);
+  }
+  return { ...provider, models: merged };
+}
+
 /**
  * Merge: user file's providers fully replace package providers with the same
  * key. Providers only in the user file are added. Providers only in the
@@ -114,7 +215,7 @@ export function mergeProviders(
  * apply env-var baseUrl overrides for the legacy providers, and return the
  * merged provider map plus diagnostics for each source.
  */
-export function loadProviders(pkgRoot: string, env: NodeJS.ProcessEnv = process.env): LoadResult {
+export async function loadProviders(pkgRoot: string, env: NodeJS.ProcessEnv = process.env): Promise<LoadResult> {
   const sources: LoadResult["sources"] = [];
   const defaultPath = join(pkgRoot, "models.json");
   const defaultRead = readIfPresent(defaultPath);
@@ -144,7 +245,11 @@ export function loadProviders(pkgRoot: string, env: NodeJS.ProcessEnv = process.
 
   const merged = mergeProviders(pkgDefault, userOverride);
   const withEnv = applyEnvOverrides(merged, env);
-  return { providers: withEnv, sources };
+  const withLiveOllama: Record<string, ProviderEntry> = {};
+  for (const [name, provider] of Object.entries(withEnv)) {
+    withLiveOllama[name] = await mergeLiveOllamaModels(provider, env);
+  }
+  return { providers: withLiveOllama, sources };
 }
 
 // ── live context-window detection (llama.cpp /props) ────────────────────────

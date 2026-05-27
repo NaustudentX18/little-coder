@@ -5,13 +5,17 @@
 
 **A coding agent tuned for small local models, built on top of [pi](https://pi.dev).**
 
-The research story behind all this — why scaffold–model fit matters, how a 9.7 B Qwen beat frontier entries on Aider Polyglot, and what the load-bearing mechanisms actually do — is written up on Substack: **[*Honey, I Shrunk the Coding Agent*](https://open.substack.com/pub/itayinbarr/p/honey-i-shrunk-the-coding-agent)**. Start there if you want the "why"; stay here for the "how".
+This repository packages a lightweight, reproducible harness for local-model coding workflows. It keeps the tool surface small, ships opinionated local-model defaults, and stays friendly to LAN-hosted inference boxes, Ollama, LM Studio, and llama.cpp.
+
+The research story behind the design — why scaffold-model fit matters, how a 9.7 B Qwen beat frontier entries on Aider Polyglot, and what the load-bearing mechanisms actually do — is written up on Substack: **[*Honey, I Shrunk the Coding Agent*](https://open.substack.com/pub/itayinbarr/p/honey-i-shrunk-the-coding-agent)**. Start there if you want the "why"; stay here for the "how".
+
+For maintainers and future agents, there is a concise repo handoff at [`HANDOVER.md`](./HANDOVER.md).
 
 ## How it relates to pi
 
 [pi](https://pi.dev) is the minimal substrate — agent loop, multi-provider API, TUI, session tree, compaction, extension model. Four built-in tools (read / write / edit / bash) and a ~1000-token system prompt.
 
-little-coder is **pi + 20 extensions + 30 skill markdown files + a Python benchmark harness**. It doesn't fork pi or shadow its CLI — pi is a plain dependency in `package.json`, and everything little-coder-specific lives under `.pi/extensions/`, `skills/`, and `benchmarks/`. The launcher runs pi with `--no-extensions` and wires in exactly the bundled set, so you add your own extension by dropping a directory into `.pi/extensions/` (or passing `little-coder -e /path/to/ext/index.ts` at launch) and remove one of ours by deleting its directory. Note this also means a globally `pi install`'d package won't load inside little-coder — `pi install` registers into pi's settings, which `--no-extensions` skips.
+little-coder is **pi + bundled extensions + skill markdown files + a small benchmark harness**. It doesn't fork pi or shadow its CLI — pi is a plain dependency in `package.json`, and everything little-coder-specific lives under `.pi/extensions/`, `skills/`, and `benchmarks/`. The launcher runs pi with `--no-extensions` and wires in the bundled set, so you add your own extension by dropping a directory into `.pi/extensions/` (or passing `little-coder -e /path/to/ext/index.ts` at launch) and remove one of ours by deleting its directory. A globally `pi install`'d package won't load inside little-coder — `pi install` registers into pi's settings, which `--no-extensions` skips.
 
 If you've never used pi, it's useful to skim [pi.dev](https://pi.dev) first — the rest of this doc assumes pi's model of `--agent-import-path`, `--mode rpc`, and `.pi/extensions/` auto-discovery.
 
@@ -70,7 +74,19 @@ export LMSTUDIO_API_KEY=noop
 
 `LLAMACPP_BASE_URL`, `OLLAMA_BASE_URL`, and `LMSTUDIO_BASE_URL` override the defaults (`http://127.0.0.1:8888/v1`, `http://127.0.0.1:11434/v1`, `http://127.0.0.1:1234/v1`).
 
+If you switch from the llama.cpp model to an Ollama/local non-llama model, `little-coder` now tries to unload the llama.cpp model first so it can release VRAM/RAM before the next session starts. It does this via `POST /models/unload` when the server supports router-mode unloading. If your Windows host uses a fixed single-model `llama-server`, set `LITTLE_CODER_LLAMACPP_STOP_CMD` to a host-side shutdown command so the wrapper can fully stop that process instead.
+
 For cloud providers, set the standard env (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, etc.) and pi will discover it.
+
+## Safety and privacy
+
+This repo is designed to stay GitHub-safe:
+
+- No API keys are checked in.
+- No private LAN addresses are used in the public examples.
+- Host-specific model endpoints belong in environment variables or untracked user overrides.
+
+If you run a local model server on another machine, point little-coder at it with `LLAMACPP_BASE_URL`, `OLLAMA_BASE_URL`, or `LMSTUDIO_BASE_URL` rather than editing the shipped defaults in place.
 
 ## Local model setup (optional)
 
@@ -151,6 +167,8 @@ All small-model-specific extensions auto-disable for large/cloud models so they 
 
 The shipped model list lives in **`models.json`** at the package root. The `llama-cpp-provider` extension reads it at startup and registers each provider via pi's `registerProvider()`. Editing this file in your global install **does** take effect — but it's overwritten on `npm install -g little-coder@latest`, so for anything you want to keep, use a user override file instead.
 
+This checkout also ships a project-local catalog at `configs/models.json`, and the terminal launcher points `LITTLE_CODER_MODELS_FILE` there by default so the install stays self-contained even if you never create a user override. The bundled catalog uses safe loopback defaults; swap them for your LAN host with environment variables when you need remote inference.
+
 User override resolution (first match wins):
 
 1. `$LITTLE_CODER_MODELS_FILE` — explicit path, useful for ad-hoc tests.
@@ -158,6 +176,10 @@ User override resolution (first match wins):
 3. `~/.config/little-coder/models.json`
 
 Merge semantics: each top-level provider key in your override file **fully replaces** the same key in the shipped `models.json`. Providers only in your file are added; providers only in the shipped file are kept. (We don't deep-merge per-model fields — you redeclare the whole provider entry, which avoids "your override silently inherited new fields from a future package release" surprises.)
+
+For local Ollama providers, little-coder also does a best-effort live discovery pass against the configured `OLLAMA_BASE_URL` and auto-registers every non-embedding model returned by `GET /api/tags`. That means if you add a model on the PC, it shows up in `--list-models` and in Pi's built-in `/model` selector without editing any files. Set `LITTLE_CODER_DISCOVER_OLLAMA=0` to disable discovery, or `LITTLE_CODER_OLLAMA_DISCOVERY_TIMEOUT_MS` to adjust the probe timeout.
+
+Need a faster local-only picker? Use the bundled `/local-models` command in the TUI. It lists only the live `llamacpp`, `ollama`, and `lmstudio` models, keeps the current model pinned to the top, and lets you switch directly from the live set.
 
 Example — switch the llama.cpp port and bump `qwen3.6-35b-a3b` to a 150K context, leave ollama untouched:
 

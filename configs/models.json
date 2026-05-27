@@ -1,0 +1,155 @@
+{
+  "providers": {
+    "ollama": {
+      "api": "openai-completions",
+      "baseUrl": "http://127.0.0.1:11434/v1",
+      "apiKey": "OLLAMA_API_KEY",
+      "models": [
+        {
+          "id": "qwen3.5-agent",
+          "name": "Qwen3.5 9.7B Agent (Ollama PC, 65K)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 65536,
+          "maxTokens": 4096,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "qwen3.6-agent",
+          "name": "Qwen3.6 27B Agent (Ollama PC, 65K)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 65536,
+          "maxTokens": 4096,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "qwen3-14b-agent",
+          "name": "Qwen3 14B Agent (Ollama PC, 65K)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 65536,
+          "maxTokens": 4096,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "qwen3.5",
+          "name": "Qwen3.5 9.7B (Ollama PC, 65K)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 65536,
+          "maxTokens": 4096,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "qwen3.6:27b",
+          "name": "Qwen3.6 27B (Ollama PC, 65K)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 65536,
+          "maxTokens": 4096,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "qwen3:14b",
+          "name": "Qwen3 14B (Ollama PC, 65K)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 65536,
+          "maxTokens": 4096,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "gemma3:12b",
+          "name": "Gemma 3 12B (Ollama PC)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32768,
+          "maxTokens": 4096,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "llama3.1-fallback",
+          "name": "Llama 3.1 8B Fallback (Ollama PC)",
+          "reasoning": false,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32768,
+          "maxTokens": 4096,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "mistral-agent",
+          "name": "Mistral Small 3.1 Agent (Ollama PC)",
+          "reasoning": true,
+          "input": [
+            "text"
+          ],
+          "contextWindow": 32768,
+          "maxTokens": 4096,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        }
+      ]
+    }
+  }
+}
