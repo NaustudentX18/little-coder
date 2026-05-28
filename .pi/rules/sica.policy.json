@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "name": "Self-Improving Coding Agent (SICA)",
+  "loop": {
+    "enabled": true,
+    "interval_minutes": 1440,
+    "max_iterations": 5,
+    "improvement_threshold": 0.1
+  },
+  "evaluation": {
+    "metrics": ["response_relevance", "tool_accuracy", "error_rate", "context_utilization"],
+    "baseline_period_days": 7
+  },
+  "memory": {
+    "fogosvault_enabled": true,
+    "patterns_tracked": ["mistake_pattern", "best_practice", "codebase_knowledge", "preference"]
+  },
+  "extensions": {
+    "mcp_enabled": true,
+    "continuous_learning": true,
+    "browser_automation": true
+  }
+}
