@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "/path/to/mcp-server-filesystem",
+      "args": [
+        "/path/to/allowed/root"
+      ],
+      "env": {}
+    }
+  }
+}
