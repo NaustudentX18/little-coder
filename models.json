@@ -3,11 +3,11 @@
     "llamacpp": {
       "api": "openai-completions",
       "baseUrl": "http://127.0.0.1:8001/v1",
-      "apiKey": "LLAMACPP_API_KEY",
+      "apiKey": "***",
       "models": [
         {
           "id": "Qwen3.6-35B-A3B-APEX-MTP-I-Nano.gguf",
-          "name": "Qwen3.6-35B-A3B-APEX-MTP-I-Nano (Windows local server)",
+          "name": "Qwen3.6-35B-A3B (Windows local server)",
           "reasoning": true,
           "input": ["text"],
           "contextWindow": 65536,
@@ -28,12 +28,93 @@
     "ollama": {
       "api": "openai-completions",
       "baseUrl": "http://127.0.0.1:11434/v1",
-      "apiKey": "OLLAMA_API_KEY",
+      "apiKey": "***",
       "models": [
         {
-          "id": "qwen3.5",
-          "name": "Qwen3.5 (ollama)",
+          "id": "qwen3.6-apex-mtp:latest",
+          "name": "Qwen3.6-35B-A3B APEX MTP (Ollama, flagship reasoning, 65K)",
           "reasoning": true,
+          "input": ["text"],
+          "contextWindow": 65536,
+          "maxTokens": 4096,
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }
+        },
+        {
+          "id": "qwen3-coder-next:latest",
+          "name": "Qwen3-Coder-Next 80B-A3B (Ollama, code, 65K, heavy)",
+          "reasoning": true,
+          "input": ["text"],
+          "contextWindow": 65536,
+          "maxTokens": 8192,
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }
+        },
+        {
+          "id": "gpt-oss:20b",
+          "name": "GPT-OSS 20B (Ollama, open reasoning, 65K)",
+          "reasoning": true,
+          "input": ["text"],
+          "contextWindow": 65536,
+          "maxTokens": 4096,
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }
+        },
+        {
+          "id": "qwen3.5:9b",
+          "name": "Qwen3.5 9B (Ollama, fast small general, 65K)",
+          "reasoning": true,
+          "input": ["text"],
+          "contextWindow": 65536,
+          "maxTokens": 4096,
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }
+        },
+        {
+          "id": "gemma4:e4b",
+          "name": "Gemma 4 4B (Ollama, smallest multimodal, 65K)",
+          "reasoning": true,
+          "input": ["text", "image"],
+          "contextWindow": 65536,
+          "maxTokens": 4096,
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }
+        },
+        {
+          "id": "gemma4:26b",
+          "name": "Gemma 4 26B (Ollama, general, 32K)",
+          "reasoning": true,
+          "input": ["text", "image"],
+          "contextWindow": 32768,
+          "maxTokens": 4096,
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }
+        },
+        {
+          "id": "granite4.1:8b",
+          "name": "Granite 4.1 8B (Ollama, IBM tool-calling, 32K)",
+          "reasoning": false,
+          "input": ["text"],
+          "contextWindow": 32768,
+          "maxTokens": 4096,
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }
+        },
+        {
+          "id": "glm-4.7-flash:latest",
+          "name": "GLM-4.7 Flash (Ollama, Zhipu web-app dev, 65K)",
+          "reasoning": true,
+          "input": ["text"],
+          "contextWindow": 65536,
+          "maxTokens": 8192,
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }
+        },
+        {
+          "id": "nomic-embed-text:latest",
+          "name": "Nomic Embed Text (Ollama, embeddings)",
+          "reasoning": false,
+          "input": ["text"],
+          "contextWindow": 8192,
+          "maxTokens": 4096,
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }
+        },
+        {
+          "id": "mistral-small3.2:24b",
+          "name": "Mistral Small 3.2 24B (Ollama, general, 32K)",
+          "reasoning": false,
           "input": ["text"],
           "contextWindow": 32768,
           "maxTokens": 4096,

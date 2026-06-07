@@ -148,6 +148,57 @@
             "cacheRead": 0,
             "cacheWrite": 0
           }
+        },
+        {
+          "id": "hf.co/unsloth/Devstral-Small-2-24B-Instruct-2512-GGUF:UD-Q4_K_XL",
+          "name": "Devstral Small 2 24B Instruct Q4 XL (Ollama PC, 65K)",
+          "reasoning": false,
+          "tools": true,
+          "contextWindow": 65536,
+          "maxTokens": 8192,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "hf.co/unsloth/Qwen3-Coder-Next-GGUF:UD-Q4_K_M",
+          "name": "Qwen3 Coder Next 80B-A3B Q4 (Ollama PC, 65K+, heavy)",
+          "reasoning": false,
+          "tools": true,
+          "contextWindow": 65536,
+          "maxTokens": 8192,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "glm-4.7-flash:latest",
+          "name": "GLM 4.7 Flash 30B MoE-lite (Ollama PC, 65K)",
+          "reasoning": true,
+          "tools": true,
+          "contextWindow": 65536,
+          "maxTokens": 8192,
+          "input": [
+            "text"
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
         }
       ]
     }

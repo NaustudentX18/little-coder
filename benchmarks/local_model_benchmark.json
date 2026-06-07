@@ -1,0 +1,150 @@
+{
+  "generated_at": "2026-05-27T12:05:24+1000",
+  "mode": "lite",
+  "models": [
+    {
+      "display_context": null,
+      "error": "cold: timed out",
+      "model": "glm-4.7-flash:latest",
+      "parameter_billions": 29.0,
+      "provider": "ollama",
+      "size_bytes": 19019272098,
+      "status": "error"
+    },
+    {
+      "display_context": null,
+      "error": "cold: timed out",
+      "model": "mistral-agent:latest",
+      "parameter_billions": 24.0,
+      "provider": "ollama",
+      "size_bytes": 15486899149,
+      "status": "error"
+    },
+    {
+      "display_context": null,
+      "error": "cold: timed out",
+      "model": "mistral-small3.1:latest",
+      "parameter_billions": 24.0,
+      "provider": "ollama",
+      "size_bytes": 15486899118,
+      "status": "error"
+    },
+    {
+      "display_context": null,
+      "error": "cold: timed out",
+      "model": "qwen3-14b-agent:latest",
+      "parameter_billions": 14.0,
+      "provider": "ollama",
+      "size_bytes": 9276232831,
+      "status": "error"
+    },
+    {
+      "display_context": null,
+      "error": "cold: timed out",
+      "model": "qwen3.5-agent:latest",
+      "parameter_billions": 9.0,
+      "provider": "ollama",
+      "size_bytes": 6594509117,
+      "status": "error"
+    },
+    {
+      "display_context": null,
+      "error": "cold: timed out",
+      "model": "qwen3.5:latest",
+      "parameter_billions": 9.0,
+      "provider": "ollama",
+      "size_bytes": 6594486244,
+      "status": "error"
+    },
+    {
+      "display_context": null,
+      "error": "cold: timed out",
+      "model": "qwen3.6-agent:latest",
+      "parameter_billions": 27.0,
+      "provider": "ollama",
+      "size_bytes": 17420467151,
+      "status": "error"
+    },
+    {
+      "display_context": null,
+      "error": "cold: timed out",
+      "model": "gemma4:e4b",
+      "parameter_billions": 8.0,
+      "provider": "ollama",
+      "size_bytes": 9608362251,
+      "status": "error"
+    },
+    {
+      "display_context": null,
+      "error": "cold: timed out",
+      "model": "granite4.1:8b",
+      "parameter_billions": 8.0,
+      "provider": "ollama",
+      "size_bytes": 5347944541,
+      "status": "error"
+    },
+    {
+      "display_context": null,
+      "error": "cold: timed out",
+      "model": "qwen3.5:9b",
+      "parameter_billions": 9.0,
+      "provider": "ollama",
+      "size_bytes": 6594486244,
+      "status": "error"
+    },
+    {
+      "display_context": null,
+      "error": "cold: timed out",
+      "model": "qwen3:14b",
+      "parameter_billions": 14.0,
+      "provider": "ollama",
+      "size_bytes": 9276232818,
+      "status": "error"
+    },
+    {
+      "display_context": null,
+      "error": "cold: timed out",
+      "model": "mistral-small3.2:24b",
+      "parameter_billions": 24.0,
+      "provider": "ollama",
+      "size_bytes": 15177396309,
+      "status": "error"
+    },
+    {
+      "display_context": null,
+      "error": "cold: timed out",
+      "model": "gemma4:26b",
+      "parameter_billions": 25.0,
+      "provider": "ollama",
+      "size_bytes": 17987592748,
+      "status": "error"
+    },
+    {
+      "display_context": null,
+      "error": "cold: timed out",
+      "model": "qwen3.6:27b",
+      "parameter_billions": 27.0,
+      "provider": "ollama",
+      "size_bytes": 17420444274,
+      "status": "error"
+    },
+    {
+      "display_context": null,
+      "error": "cold: timed out",
+      "model": "nemotron3:33b",
+      "parameter_billions": 33.0,
+      "provider": "ollama",
+      "size_bytes": 27638642104,
+      "status": "error"
+    },
+    {
+      "display_context": null,
+      "error": "cold: timed out",
+      "model": "qwen3.6:35b-a3b",
+      "parameter_billions": 36.0,
+      "provider": "ollama",
+      "size_bytes": 23938345112,
+      "status": "error"
+    }
+  ]
+}
